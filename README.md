@@ -1,8 +1,8 @@
 ![](./static/images/VCT.png)
 
-![Golang version](https://img.shields.io/github/go-mod/go-version/deniskrumko/visual-coordinates-tool)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/deniskrumko/visual-coordinates-tool/build.yml)
-![Docker pulls](https://img.shields.io/docker/pulls/deniskrumko/visual-coordinates-tool)
+[![Golang version](https://img.shields.io/github/go-mod/go-version/deniskrumko/visual-coordinates-tool)](https://github.com/deniskrumko/visual-coordinates-tool/blob/master/go.mod)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/deniskrumko/visual-coordinates-tool/build.yml)](https://github.com/deniskrumko/visual-coordinates-tool/actions)
+[![Docker pulls](https://img.shields.io/docker/pulls/deniskrumko/visual-coordinates-tool)](https://hub.docker.com/r/deniskrumko/visual-coordinates-tool/tags)
 
 Utility to visualize coordinates-detecting ML models results
 
