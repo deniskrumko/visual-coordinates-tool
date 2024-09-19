@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="New website" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon/site.webmanifest">
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@900&display=swap" rel="stylesheet">
+    <title>{{.DisplayName}}</title>
+  </head>
+  <body>
+
+    <nav class="navbar fixed-top bg-primary" data-bs-theme="dark">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img src="/static/favicon/android-chrome-192x192.png" alt="VCT" width="28" height="28">
+          <span>{{.DisplayName}}</span>
+        </a>
+        <span class="navbar-text" id="coordinates">Cursor coordinates</span>
+      </div>
+    </nav>
+
+    <div class="wrapper">
+      <div class="container content">
+        <br><br><br>
+        <form action="/recognize" method="post" id="form">
+          <!-- Predefined service configurations -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text" id="basic-addon0">Service</span>
+              <select id="predefined-service" class="form-select form-control" aria-describedby="basic-addon0">
+                {{if .ServiceGroups}}
+                <optgroup label="Select service"></optgroup>
+                <optgroup label="=============="></optgroup>
+                <option value="" data-json-template="" data-formdata-field="" data-xy-field="" disabled>
+                  –– User defined configuration ––
+                </option>
+                {{range $groupName, $services := .ServiceGroups}}
+                <optgroup label="{{$groupName}}">
+                  {{range $i, $service := $services}}
+                  <option value="{{$service.Url}}" data-json-template='{{$service.RequestJSONTemplate}}' data-formdata-field='{{$service.RequestFormdataField}}' data-xy-field='{{$service.ResponseXYField}}' {{if $service.Default}}selected{{end}}>{{$service.Name}}</option>
+                  {{end}}
+                </optgroup>
+                {{end}}
+                {{else}}
+                <option value="" data-json-template="" data-formdata-field="" data-xy-field="" disabled selected>
+                  –– No predefined service configurations ––
+                </option>
+                {{end}}
+              </select>
+            </div>
+          </div>
+
+          <!-- Endpoint input -->
+          <div class="mb-3">
+            <div class="input-group ">
+              <span class="input-group-text" id="basic-addon1">Endpoint</span>
+              <input type="text" name="endpoint" id="endpointInput" class="form-control" placeholder="Path to service endpoint" aria-label="URL" aria-describedby="basic-addon1">
+            </div>
+          </div>
+
+          <!-- Request/response configuration -->
+          <div class="row">
+            <div class="col">
+              <div class="mb-3" id="json-request-group">
+                <div class="input-group">
+                  <span class="input-group-text" id="basic-addon21">Request</span>
+                  <input type="text" name="requestJsonTemplate" id="requestJsonTemplate" class="form-control" placeholder="Template for JSON request" aria-label="Request" aria-describedby="basic-addon21">
+                </div>
+                <div class="form-text">JSON request: set template with <code>%s</code> for image URL</div>
+              </div>
+              <div class="mb-3" style="display: none;" id="form-request-group">
+                <div class="input-group">
+                  <span class="input-group-text" id="basic-addon22">Request</span>
+                  <input type="text" name="requestFormdataField" id="requestFormdataField" class="form-control" placeholder="Field name in form data" aria-label="Request" aria-describedby="basic-addon22">
+                </div>
+                <div class="form-text">FormData request: Set field name for image</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text" id="basic-addon3">Response</span>
+                  <input type="text" name="responseXYField" id="responseXYField" class="form-control" placeholder="Field with coordinates" aria-label="Response" aria-describedby="basic-addon3">
+                </div>
+                <div class="form-text">JSON response: field with coordinates like <code>result.coords</code></div>
+              </div>
+            </div>
+          </div>
+
+          <hr style="margin-bottom: 30px;">
+
+          <!-- File selector -->
+          <div class="mb-3">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="imageFileInput" class="form-label">Add image here</label>
+                <br>
+                <input type="file" name="imageFile" id="imageFileInput">
+              </div>
+              <div class="col-md-8">
+                <label for="imageUrlInput" class="form-label">
+                  ...or define image URL (samples{{range $i, $url := .Samples}} <a href="#" onclick="setImageUrl('{{$url}}')">#{{$i}}</a>{{end}})
+                </label>
+                <input type="text" name="imageUrl" class="form-control" id="imageUrlInput">
+              </div>
+            </div>
+          </div>
+
+           <!-- Submit button -->
+           <div class="mb-3">
+            <button onclick="sendForm()" type="button" class="btn btn-primary">Get coordinates</button>
+            <span class="form-check request-params">
+              <input class="form-check-input" type="checkbox" id="displayValues" checked>
+              <label class="form-check-label" for="displayValues">
+                Show coordinates of each point
+              </label>
+            </span>
+            <span class="form-check request-params">
+              <input class="form-check-input" type="checkbox" id="requestIsJson" name="requestIsJson" checked>
+              <label class="form-check-label" for="requestIsJson">
+                JSON Request
+              </label>
+            </span>
+           </div>
+        </form>
+
+        <div id="alert-msg" class="alert alert-danger" role="alert" style="display: none;"></div>
+        <div id="success-msg" class="alert alert-success" role="alert" style="display: none;"></div>
+        <canvas id="canvas" src="#" alt="your image"></canvas>
+      </div>
+      <div class="footer">
+        <div class="container">
+          <footer class="d-flex flex-wrap justify-content-between align-items-center my-4">
+            <p class="col-md-4 mb-0 text-muted">© 2024 Denis Krumko</p>
+            <ul class="nav col-md-4 justify-content-end">
+              <li class="nav-item">
+                <a href="https://github.com/deniskrumko/visual-coordinates-tool" class="nav-link px-2 text-muted" target="_blank">Github</a>
+              </li>
+            </ul>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+  </body>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Custom styles and scripts -->
+  <script src="/static/base.js"></script>
+  <link rel="stylesheet" href="/static/base.css">
+</html>
