@@ -4,6 +4,8 @@ Utility to visualize coordinates-detecting ML models results
 
 # 🐳 Docker image
 
+Checkout image on Docker Hub: https://hub.docker.com/r/deniskrumko/visual-coordinates-tool
+
 ```bash
 docker pull deniskrumko/visual-coordinates-tool:latest
 ```
