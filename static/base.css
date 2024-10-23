@@ -31,3 +31,19 @@ footer {
     display: inline-block;
     margin-left: 10px;
 }
+
+#response-div {
+    margin-top: 50px;
+}
+
+#response-json {
+    padding: 10px 14px;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    margin: 0;
+    font-size: 12px !important;
+}
+
+#response-json-col {
+    background: #f8f9fa;
+    border-left: 1px solid #dee2e6;
+}

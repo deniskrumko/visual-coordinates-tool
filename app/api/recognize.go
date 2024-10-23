@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -27,6 +28,11 @@ type Recognizer interface {
 	GetResponse() ([]byte, error)
 }
 
+type Coordinates struct {
+	Coordinates [][]int
+	Response    map[string]any
+}
+
 func getRecognizeRouter() (chi.Router, error) {
 	r := chi.NewRouter()
 
@@ -38,7 +44,7 @@ func getRecognizeRouter() (chi.Router, error) {
 		if !isJsonRequest {
 			result, err := getFileContent(r)
 			if err != nil {
-				errorResponse(w, fmt.Errorf("can't get file content: %w", err))
+				errorResponse(w, nil, fmt.Errorf("can't get file content: %w", err))
 				return
 			}
 
@@ -61,12 +67,21 @@ func getRecognizeRouter() (chi.Router, error) {
 
 		// Measure execution time
 		if err != nil {
-			errorResponse(w, err)
+			var responseMap map[string]any
+			if coordinates != nil {
+				responseMap = coordinates.Response
+			}
+			errorResponse(w, responseMap, err)
 		} else {
 			successResponse(w, struct {
-				Coordinates   [][]int `json:"coordinates"`
-				ExecutionTime int     `json:"executionTime"`
-			}{coordinates, int(time.Since(start).Milliseconds())})
+				Coordinates   [][]int        `json:"coordinates"`
+				Response      map[string]any `json:"response"`
+				ExecutionTime int            `json:"executionTime"`
+			}{
+				coordinates.Coordinates,
+				coordinates.Response,
+				int(time.Since(start).Milliseconds()),
+			})
 		}
 	})
 
@@ -82,7 +97,7 @@ func recognizeCoordinates(
 	xyField string,
 	imageURL string,
 	imageContent io.Reader,
-) ([][]int, error) {
+) (*Coordinates, error) {
 	var recognizer Recognizer
 	if isJSON {
 		recognizer = recognize.NewJSONRecognizer(endpoint, jsonTemplate, imageURL)
@@ -100,12 +115,22 @@ func recognizeCoordinates(
 		return nil, fmt.Errorf("error creating response extractor: %w", err)
 	}
 
-	coordinates, err := ext.Extract(response)
-	if err != nil {
-		return nil, fmt.Errorf("error extracting coordinates: %w", err)
+	var responseMap map[string]any
+	if err := json.Unmarshal(response, &responseMap); err != nil {
+		return nil, err
 	}
 
-	return coordinates, nil
+	coordinates, err := ext.Extract(responseMap)
+	if err != nil {
+		return &Coordinates{
+			Response: responseMap,
+		}, fmt.Errorf("error extracting coordinates: %w", err)
+	}
+
+	return &Coordinates{
+		Coordinates: coordinates,
+		Response:    responseMap,
+	}, nil
 }
 
 func getFormValue(r *http.Request, name string) string {

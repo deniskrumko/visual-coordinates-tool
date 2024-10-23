@@ -46,7 +46,7 @@ func getIndexRouter(config *env.Config) (chi.Router, error) {
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		if err := t.Execute(w, tContext); err != nil {
-			errorResponse(w, fmt.Errorf("can't execute index template: %w", err))
+			errorResponse(w, nil, fmt.Errorf("can't execute index template: %w", err))
 		}
 	})
 

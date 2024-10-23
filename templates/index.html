@@ -104,8 +104,18 @@
               </div>
               <div class="col-md-8">
                 <label for="imageUrlInput" class="form-label">
-                  ...or define image URL (samples{{range $i, $url := .Samples}} <a href="#" onclick="setImageUrl('{{$url}}')">#{{$i}}</a>{{end}})
+                  ...or define image URL
                 </label>
+                <div class="dropdown" style="display: inline-block;">
+                  <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select sample
+                  </button>
+                  <ul class="dropdown-menu">
+                    {{range $i, $url := .Samples}}
+                    <li><a class="dropdown-item" onclick="setImageUrl('{{$url}}')">{{$url}}</a></li>
+                    {{end}}
+                  </ul>
+                </div>
                 <input type="text" name="imageUrl" class="form-control" id="imageUrlInput">
               </div>
             </div>
@@ -129,9 +139,27 @@
            </div>
         </form>
 
+        <div id="response-div" class="card mb-3" style="display: none;">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <div class="card-body">
+                <h3 class="card-title">
+                  Response
+                  <span class="badge text-bg-success" id="response-status-ok"></span>
+                  <span class="badge text-bg-danger" id="response-status-error"></span>
+                </h3>
+                <p class="card-text" id="response-message"></p>
+                <p class="card-text"><small class="text-body-secondary" id="response-timestamp">Last updated 3 mins ago</small></p>
+              </div>
+            </div>
+            <div class="col-md-8" id="response-json-col">
+              <pre id="response-json"></pre>
+            </div>
+          </div>
+        </div>
         <div id="alert-msg" class="alert alert-danger" role="alert" style="display: none;"></div>
-        <div id="success-msg" class="alert alert-success" role="alert" style="display: none;"></div>
         <canvas id="canvas" src="#" alt="your image"></canvas>
+
       </div>
       <div class="footer">
         <div class="container">
@@ -154,6 +182,9 @@
   integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Json beautify -->
+  <script src="https://cdn.jsdelivr.net/npm/json-beautify@1.1.1/index.min.js"></script>
 
   <!-- Custom styles and scripts -->
   <script src="/static/base.js"></script>

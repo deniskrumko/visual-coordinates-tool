@@ -1,7 +1,6 @@
 package extractor
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/go-bongo/go-dotaccess"
@@ -22,15 +21,7 @@ func NewExtractor(fieldPath string) (*Extractor, error) {
 	}, nil
 }
 
-func (e *Extractor) Extract(response []byte) ([][]int, error) {
-	// convert response to map
-	var responseMap map[string]any
-
-	err := json.Unmarshal(response, &responseMap)
-	if err != nil {
-		return nil, err
-	}
-
+func (e *Extractor) Extract(responseMap map[string]any) ([][]int, error) {
 	// extract coordinates
 	coordinates, err := extractCoordinates(responseMap, e.fieldPath)
 	if err != nil {

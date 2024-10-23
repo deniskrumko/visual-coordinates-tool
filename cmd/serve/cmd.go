@@ -14,7 +14,7 @@ var (
 		Short: "Run API server",
 		Run: func(cmd *cobra.Command, _ []string) {
 			if err := api.RunServer(cmd.Context(), *configFile); err != nil {
-				log.Fatalf(err.Error())
+				log.Fatalf(err.Error()) // nolint
 			}
 		},
 	}

@@ -10,13 +10,8 @@ import (
 )
 
 type ErrorResponse struct {
-	Error string `json:"error"`
-}
-
-func maybeDie(err error) {
-	if err != nil {
-		panic(err)
-	}
+	OriginalResponse map[string]any `json:"response"`
+	Error            string         `json:"error"`
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve
@@ -46,10 +41,13 @@ func successResponse(w http.ResponseWriter, data any) {
 	w.Write(jsonData) // nolint
 }
 
-func errorResponse(w http.ResponseWriter, err error) {
+func errorResponse(w http.ResponseWriter, response map[string]any, err error) {
 	fmt.Printf("Error response: %v\n", err)
 
-	data := ErrorResponse{Error: err.Error()}
+	data := ErrorResponse{
+		Error:            err.Error(),
+		OriginalResponse: response,
+	}
 	jsonData, _ := json.Marshal(data)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)

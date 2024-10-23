@@ -211,16 +211,45 @@ function sendForm() {
         return response.json();
       } else {
         response.json().then((data) => {
-          showAlert("Service error: " + data.error);
+          // showAlert("Service error (HTTP " + response.status + "): " + data.error);
+          showResponse(data, response.status);
         });
       }
     })
     .then((data) => {
       if (data) {
         drawCoordinates(data.coordinates);
-        showSuccess("Coordinates received (" + data.coordinates.length + "). Took " + data.executionTime + "ms");
+        // showSuccess("Coordinates received (" + data.coordinates.length + "). Took " + data.executionTime + "ms");
+        showResponse(data, 200);
       }
     });
+}
+
+function showResponse(data, status) {
+  document.getElementById("response-div").style.display = "block";
+  document.getElementById("response-timestamp").innerHTML = new Date().toLocaleString();
+
+  let message = '';
+  if (status === 200) {
+    message = "Coordinates received. Took " + data.executionTime + "ms";
+    document.getElementById("response-status-ok").innerHTML = "HTTP 200";
+    document.getElementById("response-status-ok").style.display = "inline-block";
+    document.getElementById("response-status-error").style.display = "none";
+  } else {
+    message = "Backend error: " + data.error;
+    document.getElementById("response-status-error").innerHTML = "HTTP " + status;
+    document.getElementById("response-status-error").style.display = "inline-block";
+    document.getElementById("response-status-ok").style.display = "none";
+  }
+  document.getElementById("response-message").innerHTML = message
+
+  var pretty_response = beautify(data.response, null, 2, 100);
+  console.log(pretty_response);
+  document.getElementById("response-json").innerHTML = pretty_response;
+}
+
+function hideResponse() {
+  document.getElementById("response-div").style.display = "none";
 }
 
 // Show alert message
@@ -230,17 +259,9 @@ function showAlert(message) {
   document.getElementById("alert-msg").innerHTML = message;
 }
 
-// Show success message
-function showSuccess(message) {
-  hideMessages()
-  document.getElementById("success-msg").style.display = "block";
-  document.getElementById("success-msg").innerHTML = message;
-}
-
 // Hide all messages
 function hideMessages() {
   document.getElementById("alert-msg").style.display = "none";
-  document.getElementById("success-msg").style.display = "none";
 }
 
 // Reset service selector to use user-defined config
@@ -253,6 +274,7 @@ document.getElementById("predefined-service").addEventListener("change", functio
   setPredefinedService();
   hideMessages();
   cleanCanvas();
+  hideResponse();
   renderImage();
 });
 
