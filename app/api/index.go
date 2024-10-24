@@ -18,7 +18,7 @@ const (
 type IndexPageContext struct {
 	DisplayName   string
 	ServiceGroups map[env.ServiceGroup][]env.Service
-	Samples       []string
+	Samples       env.Samples
 }
 
 // Get index page router with handlers
@@ -41,7 +41,7 @@ func getIndexRouter(config *env.Config) (chi.Router, error) {
 		}
 
 		tContext.ServiceGroups = config.GetServiceGroups()
-		tContext.Samples = config.GetSamples()
+		tContext.Samples = config.Samples
 	}
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {

@@ -111,8 +111,16 @@
                     Select sample
                   </button>
                   <ul class="dropdown-menu">
-                    {{range $i, $url := .Samples}}
-                    <li><a class="dropdown-item" onclick="setImageUrl('{{$url}}')">{{$url}}</a></li>
+                    {{range $i, $img := .Samples.Images}}
+                      {{if eq $img "-"}}
+                      <li><hr class="dropdown-divider"></li>
+                      {{else}}
+                      <li>
+                        <a class="dropdown-item" onclick="setImageUrl('{{$.Samples.Prefix}}{{$img}}')">
+                          {{$img}}
+                        </a>
+                      </li>
+                      {{end}}
                     {{end}}
                   </ul>
                 </div>

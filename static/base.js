@@ -243,13 +243,9 @@ function showResponse(data, status) {
   }
   document.getElementById("response-message").innerHTML = message
 
-  var pretty_response = beautify(data.response, null, 2, 100);
+  var pretty_response = beautify(data.response, null, 2, 80);
   console.log(pretty_response);
   document.getElementById("response-json").innerHTML = pretty_response;
-}
-
-function hideResponse() {
-  document.getElementById("response-div").style.display = "none";
 }
 
 // Show alert message
@@ -262,6 +258,7 @@ function showAlert(message) {
 // Hide all messages
 function hideMessages() {
   document.getElementById("alert-msg").style.display = "none";
+  document.getElementById("response-div").style.display = "none";
 }
 
 // Reset service selector to use user-defined config
@@ -274,7 +271,6 @@ document.getElementById("predefined-service").addEventListener("change", functio
   setPredefinedService();
   hideMessages();
   cleanCanvas();
-  hideResponse();
   renderImage();
 });
 

@@ -104,6 +104,7 @@ images = [
     'cars/1.jpg',
     'cars/2.jpg',
     'cars/3.jpg',
+    '-',  # will act as divider
     'trucks/4.jpg',
     'trucks/5.jpg',
 ]

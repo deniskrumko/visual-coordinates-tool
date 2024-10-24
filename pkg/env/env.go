@@ -61,13 +61,3 @@ func (c *Config) GetServiceGroups() map[ServiceGroup][]Service {
 
 	return groupedServices
 }
-
-// Extract samples from config
-func (c *Config) GetSamples() []string {
-	var result []string
-	for _, v := range c.Samples.Images {
-		result = append(result, c.Samples.Prefix+v)
-	}
-
-	return result
-}
